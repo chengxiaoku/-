@@ -1,0 +1,329 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script src="jquery-1.11.3.js"></script>
+<style type="text/css">
+*{ margin:0; padding:0}
+
+</style>
+<title>无标题文档</title>
+</head>
+
+<body>
+	<div id="div_1" style="border:4px #666 solid; width:200px; height:300px;">
+    	<div style="margin:10px; border:#666 solid 2px; height:30px; line-height:30px;"> 
+        	<div style="width:60px; margin-left:5px; margin-top:1.5px;height:26px; background-color:#999; color:#F00; float:left; text-align:center;" id="time">0:00</div>
+            <div  id="hade" style="width:35px; margin-left:5px; margin-top:1.5px;height:26px;float:left;"><img src="../img/03.jpg"  style='width:35px;height:26px;'  id="img_c"/></div>
+            <div id="qs" style="width:60px; margin-left:110px; margin-top:1.5px;height:26px; background-color:#999; color:#0F0; text-align:center;"></div>
+        </div>
+        
+        <div style=" margin:6px; background-color:#CCC; height:240px; border-top:#999 4px solid; border-left:#999 4px solid; border-bottom:#FFF 4px solid; border-right:#FFF 4px solid" id="div_last"></div>
+    </div>
+    
+    
+    
+    <div id="test"></div>
+
+
+
+</body>
+<script type="text/javascript">
+$(function(){
+	$("#hade").bind("click",function(){
+		window.location.reload();
+		});
+	
+	
+	
+	
+	//页面设置
+	div_width=$("#div_last").css("width");//获取主页面的宽度与高度
+	div_height=$("#div_last").css("height");
+
+	
+		a=0;	
+		b=1;
+		
+		
+		//设置蒙版
+function  meng(){
+		$("#test").css({"background-color":"#CCC","width":parseInt(div_width)+5,"height":parseInt(div_height)+5,"position":"absolute","top":$("#div_last").offset().top,"left":$("#div_last").offset().left,"opacity":"0.3"});
+		
+		
+		$("#test").bind("click",function(){
+			return false;
+		});
+		
+}
+		
+	
+	time=0;	
+function time_2(){	//时钟定时器
+	
+		if(b<10){
+			b="0"+b;
+		}else if (b>60){
+			b="0"+0;
+			a+=1;
+			
+		}
+		time=a+":"+b;
+		b=parseInt(b)+1;	
+		$("#time").text(time);
+		
+}
+
+	
+	//生成空格 并建立坐标点 tx ty
+		p="";
+		x=13;//行数
+		y=9;//列数
+		//算出每个小方格的宽度和高度
+			num_x=(parseFloat(div_width)-y*4)/y; 
+			//4是边框的宽度
+			num_y=(parseFloat(div_height)-x*4)/x;
+		
+		p+="<table width='180px' height='240' border='1' cellspacing='0' cellpadding='0'>";
+		for(var i=0;i<x;i++){
+			p+="<tr>";
+			for(var j=0;j<y;j++){
+				p+="<td style='border-top:#FFF 2px solid;text-align:center; border-left:#FFF 2px solid; border-bottom:#999 2px solid; border-right:#999 2px solid;width:"+num_x+"px;height:"+num_y+"px;' tx="+parseInt(j+1)+" ty="+parseInt(i+1)+"></td>";	
+				}
+			p+="</tr>";
+			}
+			p+="</table>";
+			
+			$("#div_last").html(p);
+					
+			
+	
+	//生成炸弹   num
+	
+
+		num=15;  //炸蛋数
+		 pp="<img src='../img/02.jpg' style='width:16px; height:14px;'/>";
+		 arr= new Array();
+		for(var i=0;i<num+1;i++){		
+			_ty=Math.ceil(Math.random()*x); //1~13
+			_tx=Math.ceil(Math.random()*y);
+			
+			
+			if($("tr td[ty="+_ty+"][tx="+_tx+"]").children("img").length==0){	//没有雷  添加雷
+				
+					$("tr td[ty="+_ty+"][tx="+_tx+"]").attr("zd",1);
+									
+			}else{
+				$("tr td[ty="+_ty+"][tx="+_tx+"]").attr("zd",0);
+				//+++++++++++++++++++++++++++++++++
+			}			
+		}
+
+	
+function qishu(){   //旗数
+					qs=0;
+				for (var i=1;i<x;i++){
+					for(var j=1;j<y;j++){
+						if($("tr td[ty="+i+"][tx="+j+"]").attr("zd")==1){
+							qs+=1;	
+							}
+						}
+					
+					}
+				$("#qs").text(qs);
+}
+
+qishu();
+
+			//鼠标点击事件 (个数)
+			
+			//遍历  属性 ZD为1 的 元素 
+			
+			function xunhuan(){
+				pl=0;
+				for (var i=1;i<x;i++){
+					for(var j=1;j<y;j++){
+						if($("tr td[ty="+i+"][tx="+j+"]").attr("zd")==1){	//如果有炸弹标记的话  
+							
+							if($("tr td[ty="+i+"][tx="+j+"]").attr("qz")==1){	// 有旗帜标记的话
+									$("tr td[ty="+i+"][tx="+j+"]").empty();
+									 f="<img src='../img/06.jpg' style='width:16px; height:14px;'/>";
+									 pl+=1;
+									 $("tr td[ty="+i+"][tx="+j+"]").append(f);
+								}else{
+							 		s="<img src='../img/02.jpg' style='width:16px; height:14px;'/>";
+									$("tr td[ty="+i+"][tx="+j+"]").append(s);
+								}
+								$("tr td[ty="+i+"][tx="+j+"]").css({"border-top-color":"#999","border-bottom-color":"#FFF","border-left-color":"#999","border-bottom-color":"#FFF"});
+							
+							}
+						}
+					
+					}
+				
+				}
+			
+			qss=qs 
+			
+			
+			time_r=0;
+			
+$("tr td").bind("mousedown",function(e){
+				time_r+=1;
+				if(time_r==1){
+					time_1=window.setInterval(time_2,1000);
+					}
+				   //旗帜的数量
+				if(3 == e.which){
+					//右键点击事件
+					
+					document.oncontextmenu = function(){return false;}//右键菜单禁用
+					if($(this).html()==""){
+						if (qss!=0){			//控制插旗数量
+							 qq="<img src='../img/04.jpg' style='width:16px; height:14px;'/>";	//增加旗帜
+						 	$(this).append(qq);
+						 	qss-=1;
+						 }else if(qss==0){
+							 return false;
+						}
+						 $(this).attr("qz",1);
+					}else if($(this).children("img").attr("src")=='../img/04.jpg'){
+						qss+=1;
+						$(this).attr("qz",0);
+						$(this).empty();
+					}
+					
+					$("#qs").text(qss);
+					
+					
+           
+          		}else if(1 == e.which){//左键 点击
+					if($(this).children("img").attr("src")=="../img/04.jpg"){
+						qss+=1;
+						$("#qs").text(qss);
+						}
+					
+					
+					
+                   $(this).css({"border-top-color":"#999","border-bottom-color":"#FFF","border-left-color":"#999","border-bottom-color":"#FFF"});
+					x1=$(this).attr("tx");
+					y1=$(this).attr("ty");
+					
+					if($(this).attr("zd")==1){
+						//$(this).siblings().children("img").css("background-color","#F00");
+						xunhuan();
+						$(this).empty();
+						 tt="<img src='../img/05.jpg' style='width:16px; height:14px;'/>";
+						$(this).append(tt);
+						
+						  meng();	
+						window.clearInterval(time_1);
+						$("#hade").children("img").attr("src","../img/07.jpg");
+							
+							
+							
+														
+							
+							alert("        游戏结束!\n  用时:"+time+",共排雷"+pl+"个");
+							
+												
+						}else{
+			
+					//获取周围雷数
+					function lei_fun(x11,y11){
+						
+							return      $("tr td[ty="+y11+"][tx="+x11+"][zd="+1+"]").length;
+					}
+					a1=(parseInt(x1)-1);
+					a2=(parseInt(y1)+1);
+					
+					b1=parseInt(x1);
+					b2=(parseInt(y1)+1);
+					
+					c1=(parseInt(x1)+1);
+					c2=(parseInt(y1)+1);
+					
+					d1=(parseInt(x1)-1);
+					d2=parseInt(y1);
+					
+					e1=(parseInt(x1)+1);
+					e2=parseInt(y1);
+					
+					f1=(parseInt(x1)-1);
+					f2=(parseInt(y1)-1);
+					
+					g1=parseInt(x1);
+					g2=(parseInt(y1)-1);
+					
+					v1=(parseInt(x1)+1);
+					v2=(parseInt(y1)-1);
+					
+					
+					
+					var yy=lei_fun(a1,a2)+
+						lei_fun(b1,b2)+
+						lei_fun(c1,c2)+
+						lei_fun(d1,d2)+
+						lei_fun(e1,e2)+
+						lei_fun(f1,f2)+
+						lei_fun(g1,g2)+
+						lei_fun(v1,v2);
+					
+					
+					switch(yy){
+						case 1:
+							 yy="<span style='color:#0FF; font-size:9px; font-weight:bold;'>"+yy+"</span>";
+							 break;
+						case 2:
+							 yy="<span style='color:#00F; font-size:9px; font-weight:bold;'>"+yy+"</span>";
+							 break;
+						case 3:
+							 yy="<span style='color:#F0F; font-size:9px; font-weight:bold;'>"+yy+"</span>";
+							 break;
+						case 4:
+							 yy="<span style='color:#F00; font-size:9px; font-weight:bold;'>"+yy+"</span>";
+							 break;
+						case 5:
+							 yy="<span style='color:#FF0; font-size:9px; font-weight:bold;'>"+yy+"</span>";
+							 break;
+						case 6:
+							 yy="<span style='color:#0F0; font-size:9px; font-weight:bold;'>"+yy+"</span>";
+							 break;
+						
+						default:
+							 yy="<span style='color:#F00; font-size:9px; font-weight:bold;'>"+yy+"</span>";
+							 break;
+						}
+					$(this).html(yy);
+					
+					
+					
+					$("#hade").children("img").attr("src","../img/01.jpg");
+					/*
+						
+			//0的连锁反应
+			//(w,b)
+			for (var i=-y;i<=y;i++){     //-9~9
+				for (var j=-x;j<=x;j++){		//-13~13
+					alert($("tr td[ty="+x1+i+"][tx="+y1+j+"]").children("span").text());
+					
+					}
+				}
+					*/
+				
+						}
+					
+					 }
+				
+}).bind("mouseup",function(){
+				$("#hade").children("img").attr("src","../img/03.jpg");
+				}).bind("mouseover",function(){
+					$(this).css({"cursor":"pointer"});
+					})
+	
+})
+	
+	
+	
+</script>
+</html>
